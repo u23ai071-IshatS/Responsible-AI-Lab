@@ -1,0 +1,3 @@
+Model,Accuracy,Acc (Male targets),Acc (Female targets),Gender Accuracy Gap (M-F),Stereotype Preference Score,N examples,N stereo examples
+BERT-base-uncased,0.4981,0.8398,0.1555,0.6843,0.7575,1584,936
+GPT-2,0.5032,0.744,0.2617,0.4823,0.6239,1584,936
