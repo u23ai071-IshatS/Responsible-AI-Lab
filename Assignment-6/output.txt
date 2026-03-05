@@ -1,0 +1,112 @@
+[DATA] Loaded 10,000 reviews.
+
+[INIT] Loading FastText model from: cc.en.300.bin (this may take ~30s) …
+[INIT] FastText model loaded. Dimensions: 300
+
+══════════════════════════════════════════════════════════════════════
+Q1 – FASTTEXT SEMANTIC SEARCH
+══════════════════════════════════════════════════════════════════════
+[Q1] Building review embeddings …
+[Q1] Query: "battery life is very poor"
+
+[Q1] Top-5 Semantically Similar Reviews:
+----------------------------------------------------------------------
+Rank 1  |  Similarity: 0.8647
+Review   : Is a useless product, the cloth is too thick and smelly.The frabric is too rough, is not a good pastry cloth.
+----------------------------------------------------------------------
+Rank 2  |  Similarity: 0.8338
+Review   : This is a high quality poster. The paper is very thick and feels almost like a canvas. The printing is wonderful and looks like a painting (well almost, it is after all, a poster). Very good work!
+----------------------------------------------------------------------
+Rank 3  |  Similarity: 0.8303
+Review   : the child seat is great, but the only thing is the straps could be better.other that that the weeride is great.
+----------------------------------------------------------------------
+Rank 4  |  Similarity: 0.8267
+Review   : This is large, highly polished and the color is dense and very attractive. It looks great on my stove. It is attractive and functional.
+----------------------------------------------------------------------
+Rank 5  |  Similarity: 0.8259
+Review   : This is a very nice piece. Colors are great, and it is quite heavy in a good way -- not thin or 'tin-y', craftsmanship is impecable.
+----------------------------------------------------------------------
+
+[INIT] Training Word2Vec for Q2 / Q3 …
+
+══════════════════════════════════════════════════════════════════════
+Q2 – NOISE COMPARISON: Word2Vec vs FastText
+══════════════════════════════════════════════════════════════════════
+[Q2] Training Word2Vec on clean reviews …
+
+[Q2] Results Table (10-review sample):
+Metric                                        Clean      Noisy
+--------------------------------------------------------------
+FastText  – Avg embedding norm               0.9085     0.8677
+Word2Vec  – Avg embedding norm               3.7683     3.7796
+Word2Vec  – Avg OOV rate                     0.0315     0.1635
+
+[Q2] Qualitative Examples (first 3 samples):
+----------------------------------------------------------------------
+
+  Example 1
+  Clean : i moved about 3 weeks ago to an apartment with a more complicated floor plan i bought two nightlights from this manugact
+  Noisy : i moved aboout 3 weeks ago to an apartment with a more complicated floor plan i bought two nightlights from this manugac
+  FastText  cosine(clean, noisy) = 0.9976
+  Word2Vec  cosine(clean, noisy) = 0.9983  (stable)
+
+  Example 2
+  Clean : i agree with the negative reviews i found this book to be slow disjointed and un involving there are more characters her
+  Noisy : i agree with the negativve reviewss i found htis book to be sloyw disjointed and un involving therwe are more characters
+  FastText  cosine(clean, noisy) = 0.9984
+  Word2Vec  cosine(clean, noisy) = 0.9980  (stable)
+
+  Example 3
+  Clean : this product was delivered on time and worked as promised i had lost my origional and was glad to beable to find a repal
+  Noisy : this product was delivered on time awnd worked as pormised i hadd lots my origionalj and was glad to beable to find a re
+  FastText  cosine(clean, noisy) = 0.9931
+  Word2Vec  cosine(clean, noisy) = 0.9951  (stable)
+
+[Q2] Key Insight:
+  FastText uses character n-grams → handles typos gracefully.
+  Word2Vec treats each token as atomic → OOV tokens → zero vectors → quality drops.
+
+══════════════════════════════════════════════════════════════════════
+Q3 – VOCABULARY COVERAGE: Word2Vec vs FastText
+══════════════════════════════════════════════════════════════════════
+[Q3] Total unique words in dataset: 33,897
+
+[Q3] Coverage Summary:
+  Metric                                            Word2Vec     FastText
+  ----------------------------------------------------------------------
+  Words in dataset vocabulary                         33,897       33,897
+  Words with exact vocab entry                        17,252       29,911
+  OOV (no exact entry)                                16,645        3,986
+  Exact vocab coverage (%)                            50.90%       88.24%
+  Effective coverage (%) – subword fallback     N/A (0 for OOV)      100.00%
+
+[Q3] Embedding behaviour for OOV words (first 10 OOV examples):
+  Word                      W2V embedding                     FT embedding norm
+  ------------------------------------------------------------------------------
+  aided                     ZERO VECTOR (OOV)                          1.1242
+  t3i                       ZERO VECTOR (OOV)                          3.3597
+  cloaked                   ZERO VECTOR (OOV)                          0.8362
+  fundamantal               ZERO VECTOR (OOV)                          0.4127
+  rakshana                  ZERO VECTOR (OOV)                          0.5432
+  ncis                      ZERO VECTOR (OOV)                          4.6889
+  primal                    ZERO VECTOR (OOV)                          1.0586
+  tenemos                   ZERO VECTOR (OOV)                          0.9161
+  divorced                  ZERO VECTOR (OOV)                          0.7531
+  assaulting                ZERO VECTOR (OOV)                          0.6356
+
+[Q3] FastText Subword Demonstration:
+  "producttt"  → FT norm=0.4132  |  W2V=OOV → zero vector
+  "baterrylife"  → FT norm=0.5577  |  W2V=OOV → zero vector
+  "amazingg"  → FT norm=0.7600  |  W2V=OOV → zero vector
+  "shiping"  → FT norm=1.0201  |  W2V=OOV → zero vector
+  "xyzabc123"  → FT norm=0.4906  |  W2V=OOV → zero vector
+
+[Q3] Key Insight:
+  Word2Vec can only embed words seen during training (min_count threshold).
+  FastText decomposes any word into character n-grams → always non-zero embedding.
+  This makes FastText superior for noisy, domain-specific, or morphologically
+  rich text (e.g., misspellings, rare product names, compound words).
+
+══════════════════════════════════════════════════════════════════════
+ALL QUESTIONS COMPLETE
+══════════════════════════════════════════════════════════════════════
